@@ -11,14 +11,29 @@ func (e InvalidPositionError) Error() string {
 	return string(e)
 }
 
-type Direction string
+type Direction int
 
 const (
-	North Direction = "N"
-	East  Direction = "E"
-	South Direction = "S"
-	West  Direction = "W"
+	North Direction = iota
+	East
+	South
+	West
 )
+
+func (d Direction) String() string {
+	switch d {
+	case North:
+		return "N"
+	case East:
+		return "E"
+	case South:
+		return "S"
+	case West:
+		return "W"
+	}
+
+	return "" // TODO(dekelund): how do we want to handle this scenario
+}
 
 type Coord struct {
 	X, Y int
@@ -94,10 +109,12 @@ func (m *RobotMover) Move(a Action) error {
 	switch a {
 	case WalkForward:
 		return m.walkForward()
+
 	case TurnRight:
-		return errors.New("not implemented")
+		return m.turnRight()
+
 	case TurnLeft:
-		return errors.New("not implemented")
+		return m.turnLeft()
 	}
 
 	return errors.New("invalid action")
@@ -113,10 +130,13 @@ func (m *RobotMover) walkForward() error {
 	switch m.currentPosition.Direction {
 	case North:
 		newPosition.Y--
+
 	case West:
 		newPosition.X--
+
 	case South:
 		newPosition.Y++
+
 	case East:
 		newPosition.X++
 	}
@@ -126,6 +146,26 @@ func (m *RobotMover) walkForward() error {
 	}
 
 	m.currentPosition = newPosition
+
+	return nil
+}
+
+func (m *RobotMover) turnLeft() error {
+	m.currentPosition.Direction--
+
+	if m.currentPosition.Direction < North {
+		m.currentPosition.Direction = West
+	}
+
+	return nil
+}
+
+func (m *RobotMover) turnRight() error {
+	m.currentPosition.Direction++
+
+	if m.currentPosition.Direction > West {
+		m.currentPosition.Direction = North
+	}
 
 	return nil
 }

@@ -102,7 +102,7 @@ func TestPosition_String(t *testing.T) {
 	}
 }
 
-func TestRobotMover_Move(t *testing.T) {
+func TestRobotMover_Move_walk_forward(t *testing.T) {
 	cases := map[string]struct {
 		Start robotmover.Position
 		End   string
@@ -154,6 +154,62 @@ func TestRobotMover_Move(t *testing.T) {
 				t.Fatal("unexpected position", str)
 			}
 		})
+	}
+}
+
+func TestRobotMover_Move_turn_left(t *testing.T) {
+	start := robotmover.Position{
+		Coord:     robotmover.Coord{X: 5, Y: 5},
+		Direction: robotmover.North,
+	}
+
+	mover, err := robotmover.New(robotmover.RoomLimits{robotmover.NewCoord(10, 10)}, start)
+	if err != nil {
+		t.Fatal("unexpected error", err)
+	}
+
+	expected := []string{"W", "S", "E", "N"}
+
+	for _, dir := range expected {
+		err = mover.Move(robotmover.TurnLeft)
+		if err != nil {
+			t.Fatal("unexpected error", err)
+		}
+
+		expectedPosition := "5 5 " + dir
+
+		str := mover.String()
+		if str != expectedPosition {
+			t.Fatal("unexpected position/direction", str, "expected", expectedPosition)
+		}
+	}
+}
+
+func TestRobotMover_Move_turn_right(t *testing.T) {
+	start := robotmover.Position{
+		Coord:     robotmover.Coord{X: 5, Y: 5},
+		Direction: robotmover.North,
+	}
+
+	mover, err := robotmover.New(robotmover.RoomLimits{robotmover.NewCoord(10, 10)}, start)
+	if err != nil {
+		t.Fatal("unexpected error", err)
+	}
+
+	expected := []string{"E", "S", "W", "N"}
+
+	for _, dir := range expected {
+		err = mover.Move(robotmover.TurnRight)
+		if err != nil {
+			t.Fatal("unexpected error", err)
+		}
+
+		expectedPosition := "5 5 " + dir
+
+		str := mover.String()
+		if str != expectedPosition {
+			t.Fatal("unexpected position/direction", str, "expected", expectedPosition)
+		}
 	}
 }
 
