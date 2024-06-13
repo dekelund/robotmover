@@ -1,12 +1,14 @@
 package robotmover
 
-type direction string
+import "fmt"
+
+type Direction string
 
 const (
-	North direction = "n"
-	East  direction = "e"
-	South direction = "s"
-	West  direction = "w"
+	North Direction = "N"
+	East  Direction = "E"
+	South Direction = "S"
+	West  Direction = "W"
 )
 
 type Coord struct {
@@ -19,7 +21,7 @@ func NewCoord(x, y uint) Coord {
 
 type Position struct {
 	Coord
-	Direction direction
+	Direction Direction
 }
 
 type RoomLimits struct {
@@ -36,4 +38,8 @@ func New(l RoomLimits, p Position) *RobotMover {
 		limits:          l,
 		currentPosition: p,
 	}
+}
+
+func (m *RobotMover) PositionAsString() string {
+	return fmt.Sprintf("%d %d %s", m.currentPosition.X, m.currentPosition.Y, m.currentPosition.Direction)
 }
