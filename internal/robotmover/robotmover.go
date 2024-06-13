@@ -1,6 +1,9 @@
 package robotmover
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type InvalidPositionError string
 
@@ -76,4 +79,53 @@ func New(l RoomLimits, p Position) (*RobotMover, error) {
 		limits:          l,
 		currentPosition: p,
 	}, nil
+}
+
+type Action string
+
+const (
+	WalkForward Action = "F"
+	TurnRight   Action = "R"
+	TurnLeft    Action = "L"
+)
+
+// Move provides functionalities to turn left, right and walk forward.
+func (m *RobotMover) Move(a Action) error {
+	switch a {
+	case WalkForward:
+		return m.walkForward()
+	case TurnRight:
+		return errors.New("not implemented")
+	case TurnLeft:
+		return errors.New("not implemented")
+	}
+
+	return errors.New("invalid action")
+}
+
+func (m *RobotMover) String() string {
+	return m.currentPosition.String()
+}
+
+func (m *RobotMover) walkForward() error {
+	newPosition := m.currentPosition
+
+	switch m.currentPosition.Direction {
+	case North:
+		newPosition.Y--
+	case West:
+		newPosition.X--
+	case South:
+		newPosition.Y++
+	case East:
+		newPosition.X++
+	}
+
+	if err := m.limits.validate(newPosition); err != nil {
+		return err
+	}
+
+	m.currentPosition = newPosition
+
+	return nil
 }

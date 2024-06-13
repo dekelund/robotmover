@@ -33,7 +33,7 @@ func TestNew(t *testing.T) {
 	}
 
 	if mover == nil {
-		t.Fatal("unexpected mover value (nil)")
+		t.Fatal("unexpected value", mover)
 	}
 }
 
@@ -99,5 +99,107 @@ func TestPosition_String(t *testing.T) {
 
 	if str != "1 2 S" {
 		t.Fatal("unexpected position-string:", str)
+	}
+}
+
+func TestRobotMover_Move(t *testing.T) {
+	cases := map[string]struct {
+		Start robotmover.Position
+		End   string
+	}{
+		"forward - move north": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 5, Y: 5},
+				Direction: robotmover.North,
+			},
+			End: "5 4 N",
+		},
+		"forward - move east": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 5, Y: 5},
+				Direction: robotmover.East,
+			},
+			End: "6 5 E",
+		},
+		"forward - move south": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 5, Y: 5},
+				Direction: robotmover.South,
+			},
+			End: "5 6 S",
+		},
+		"forward - move west": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 5, Y: 5},
+				Direction: robotmover.West,
+			},
+			End: "4 5 W",
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			mover, err := robotmover.New(robotmover.RoomLimits{robotmover.NewCoord(10, 10)}, tc.Start)
+			if err != nil {
+				t.Fatal("unexpected error", err)
+			}
+
+			err = mover.Move(robotmover.WalkForward)
+			if err != nil {
+				t.Fatal("unexpected error", err)
+			}
+
+			str := mover.String()
+			if str != tc.End {
+				t.Fatal("unexpected position", str)
+			}
+		})
+	}
+}
+
+func TestRobotMover_Move_outside_boundary(t *testing.T) {
+	cases := map[string]struct {
+		Start robotmover.Position
+	}{
+		"forward - move north": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 5, Y: 0},
+				Direction: robotmover.North,
+			},
+		},
+		"forward - move east": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 10, Y: 5},
+				Direction: robotmover.East,
+			},
+		},
+		"forward - move south": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 5, Y: 10},
+				Direction: robotmover.South,
+			},
+		},
+		"forward - move west": {
+			Start: robotmover.Position{
+				Coord:     robotmover.Coord{X: 0, Y: 5},
+				Direction: robotmover.West,
+			},
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			mover, err := robotmover.New(robotmover.RoomLimits{robotmover.NewCoord(10, 10)}, tc.Start)
+			if err != nil {
+				t.Fatal("unexpected error", err)
+			}
+
+			err = mover.Move(robotmover.WalkForward)
+
+			var expectedErrorType robotmover.InvalidPositionError
+			if errors.As(err, &expectedErrorType) != true {
+				t.Fatal("unexpected error", err)
+			}
+		})
 	}
 }
