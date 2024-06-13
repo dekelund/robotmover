@@ -77,15 +77,21 @@ func TestNew_invalidPositions(t *testing.T) {
 
 }
 
-func TestRobotMover_PositionAsString(t *testing.T) {
-	mover, err := newRobotMover(10, 10, 1, 2, robotmover.South)
+func TestCoord_String(t *testing.T) {
+	str := robotmover.Coord{X: 1, Y: 2}.String()
 
-	if err != nil {
-		t.Fatal("unexpected error", err)
+	if str != "1 2" {
+		t.Fatal("unexpected position-string:", str)
 	}
+}
 
-	position := mover.PositionAsString()
-	if position != "1 2 S" {
-		t.Fatal("unexpected position-string:", position)
+func TestPosition_String(t *testing.T) {
+	str := robotmover.Position{
+		Coord:     robotmover.Coord{X: 1, Y: 2},
+		Direction: robotmover.South,
+	}.String()
+
+	if str != "1 2 S" {
+		t.Fatal("unexpected position-string:", str)
 	}
 }

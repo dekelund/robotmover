@@ -25,9 +25,17 @@ func NewCoord(x, y uint) Coord {
 	return Coord{X: x, Y: y}
 }
 
+func (c Coord) String() string {
+	return fmt.Sprintf("%d %d", c.X, c.Y)
+}
+
 type Position struct {
 	Coord
 	Direction Direction
+}
+
+func (p Position) String() string {
+	return fmt.Sprintf("%s %s", p.Coord, p.Direction)
 }
 
 type RoomLimits struct {
@@ -60,8 +68,4 @@ func New(l RoomLimits, p Position) (*RobotMover, error) {
 		limits:          l,
 		currentPosition: p,
 	}, nil
-}
-
-func (m *RobotMover) PositionAsString() string {
-	return fmt.Sprintf("%d %d %s", m.currentPosition.X, m.currentPosition.Y, m.currentPosition.Direction)
 }
