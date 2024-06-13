@@ -9,13 +9,21 @@ const (
 	West  direction = "w"
 )
 
+type Coord struct {
+	X, Y uint
+}
+
+func NewCoord(x, y uint) Coord {
+	return Coord{X: x, Y: y}
+}
+
 type Position struct {
-	X, Y      uint
+	Coord
 	Direction direction
 }
 
 type RoomLimits struct {
-	X, Y uint
+	Coord
 }
 
 type RobotMover struct {
