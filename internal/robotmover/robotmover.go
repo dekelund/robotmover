@@ -18,10 +18,10 @@ const (
 )
 
 type Coord struct {
-	X, Y uint
+	X, Y int
 }
 
-func NewCoord(x, y uint) Coord {
+func NewCoord(x, y int) Coord {
 	return Coord{X: x, Y: y}
 }
 
@@ -43,6 +43,14 @@ type RoomLimits struct {
 }
 
 func (l RoomLimits) validate(pos Position) error {
+	if pos.X < 0 {
+		return InvalidPositionError(fmt.Sprintf("x-position %d is outside of the mesh", pos.X))
+	}
+
+	if pos.Y < 0 {
+		return InvalidPositionError(fmt.Sprintf("y-position %d is outside of the mesh", pos.Y))
+	}
+
 	if pos.X > l.X {
 		return InvalidPositionError(fmt.Sprintf("x-position %d is outside of the mesh", pos.X))
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/dekelund/robotmover/internal/robotmover"
 )
 
-func newRobotMover(xlimit, ylimit, xpos, ypos uint, dir robotmover.Direction) (*robotmover.RobotMover, error) {
+func newRobotMover(xlimit, ylimit, xpos, ypos int, dir robotmover.Direction) (*robotmover.RobotMover, error) {
 	limits := robotmover.RoomLimits{robotmover.Coord{X: xlimit, Y: ylimit}}
 
 	position := robotmover.Position{
@@ -43,13 +43,19 @@ func TestNew_invalidPositions(t *testing.T) {
 	cases := map[string]struct {
 		Coord robotmover.Coord
 	}{
-		"X outside of boundary": {
+		"X outside of min-boundary": {
+			robotmover.Coord{X: -1, Y: 5},
+		},
+		"Y outside of min-boundary": {
+			robotmover.Coord{X: 5, Y: -1},
+		},
+		"X outside of max-boundary": {
 			robotmover.Coord{X: 11, Y: 5},
 		},
-		"Y outside of boundary": {
+		"Y outside of max-boundary": {
 			robotmover.Coord{X: 5, Y: 16},
 		},
-		"Both X and Y is outside of boundary": {
+		"Both X and Y is outside of max-boundary": {
 			robotmover.Coord{X: 100, Y: 3000},
 		},
 	}
