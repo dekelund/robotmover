@@ -259,3 +259,80 @@ func TestRobotMover_Move_outside_boundary(t *testing.T) {
 		})
 	}
 }
+
+func TestRobotMover_Exec_example1(t *testing.T) {
+	limits := robotmover.RoomLimits{
+		Coord: robotmover.NewCoord(5, 5),
+	}
+
+	start := robotmover.Position{
+		Coord:     robotmover.NewCoord(1, 2),
+		Direction: robotmover.North,
+	}
+
+	// Example: RFRFFRFRF
+	actions := []robotmover.Action{
+		robotmover.TurnRight,
+		robotmover.WalkForward,
+		robotmover.TurnRight,
+		robotmover.WalkForward,
+		robotmover.WalkForward,
+		robotmover.TurnRight,
+		robotmover.WalkForward,
+		robotmover.TurnRight,
+		robotmover.WalkForward,
+	}
+
+	mover, err := robotmover.New(limits, start)
+	if err != nil {
+		t.Fatal("unexpected error", err)
+	}
+
+	err = mover.Exec(actions...)
+	if err != nil {
+		t.Fatal("unexpected error", err)
+	}
+
+	str := mover.String()
+	if str != "1 3 N" {
+		t.Fatal("unexpected position", str)
+	}
+}
+
+func TestRobotMover_Exec_example2(t *testing.T) {
+	limits := robotmover.RoomLimits{
+		Coord: robotmover.NewCoord(5, 5),
+	}
+
+	start := robotmover.Position{
+		Coord:     robotmover.NewCoord(0, 0),
+		Direction: robotmover.East,
+	}
+
+	// Example: RFLFFLRF
+	actions := []robotmover.Action{
+		robotmover.TurnRight,
+		robotmover.WalkForward,
+		robotmover.TurnLeft,
+		robotmover.WalkForward,
+		robotmover.WalkForward,
+		robotmover.TurnLeft,
+		robotmover.TurnRight,
+		robotmover.WalkForward,
+	}
+
+	mover, err := robotmover.New(limits, start)
+	if err != nil {
+		t.Fatal("unexpected error", err)
+	}
+
+	err = mover.Exec(actions...)
+	if err != nil {
+		t.Fatal("unexpected error", err)
+	}
+
+	str := mover.String()
+	if str != "3 1 E" {
+		t.Fatal("unexpected position", str)
+	}
+}

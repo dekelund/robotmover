@@ -5,6 +5,12 @@ import (
 	"fmt"
 )
 
+type InvalidDirectionError string
+
+func (e InvalidDirectionError) Error() string {
+	return string(e)
+}
+
 type InvalidPositionError string
 
 func (e InvalidPositionError) Error() string {
@@ -77,6 +83,10 @@ func (l RoomLimits) validate(pos Position) error {
 		return InvalidPositionError(fmt.Sprintf("y-position %d is outside of the mesh", pos.Y))
 	}
 
+	if pos.Direction < North || pos.Direction > West {
+		return InvalidDirectionError(fmt.Sprintf("invalid direction %d", pos.Direction))
+	}
+
 	return nil
 }
 
@@ -103,6 +113,18 @@ const (
 	TurnRight   Action = "R"
 	TurnLeft    Action = "L"
 )
+
+func (m *RobotMover) Exec(actions ...Action) error {
+	var errs []error
+
+	for _, a := range actions {
+		if err := m.Move(a); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return errors.Join(errs...)
+}
 
 // Move provides functionalities to turn left, right and walk forward.
 func (m *RobotMover) Move(a Action) error {
@@ -151,21 +173,35 @@ func (m *RobotMover) walkForward() error {
 }
 
 func (m *RobotMover) turnLeft() error {
-	m.currentPosition.Direction--
+	newPosition := m.currentPosition
 
-	if m.currentPosition.Direction < North {
-		m.currentPosition.Direction = West
+	newPosition.Direction--
+	if newPosition.Direction < North {
+		newPosition.Direction = West
 	}
+
+	if err := m.limits.validate(newPosition); err != nil {
+		return err
+	}
+
+	m.currentPosition = newPosition
 
 	return nil
 }
 
 func (m *RobotMover) turnRight() error {
-	m.currentPosition.Direction++
+	newPosition := m.currentPosition
 
-	if m.currentPosition.Direction > West {
-		m.currentPosition.Direction = North
+	newPosition.Direction++
+	if newPosition.Direction > West {
+		newPosition.Direction = North
 	}
+
+	if err := m.limits.validate(newPosition); err != nil {
+		return err
+	}
+
+	m.currentPosition = newPosition
 
 	return nil
 }
