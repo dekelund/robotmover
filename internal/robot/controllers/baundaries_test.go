@@ -61,3 +61,23 @@ func Test_ParseBoundaries_withFloat(t *testing.T) {
 		t.Fatal("y must not end with a letter")
 	}
 }
+
+func Test_ParseBoundaries_withNegativeValues(t *testing.T) {
+	_, err := controllers.ParseBoundaries("10 -5")
+
+	if err == nil {
+		t.Fatal("x must contain a positive value")
+	}
+
+	_, err = controllers.ParseBoundaries("-10 5")
+
+	if err == nil {
+		t.Fatal("y must contain a positive value")
+	}
+
+	_, err = controllers.ParseBoundaries("-10 -5")
+
+	if err == nil {
+		t.Fatal("x and y must contain a positive value")
+	}
+}

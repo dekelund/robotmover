@@ -35,6 +35,10 @@ func ParseBoundaries(b string) (Boundaries, error) {
 		return Boundaries{}, fmt.Errorf("string not fully parsed, read %d of 2", n)
 	}
 
+	if x < 0 || y < 0 {
+		return Boundaries{}, fmt.Errorf("unexpected boundaries (%d, %d)", x, y)
+	}
+
 	return Boundaries{X: x, Y: y}, nil
 }
 
