@@ -7,15 +7,27 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 
 	"github.com/dekelund/robotmover/internal/robot"
 	"github.com/dekelund/robotmover/internal/robot/controllers"
 )
 
+var mutex sync.Mutex
+
 func NewMux(controller *controllers.Controller) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/control", func(rw http.ResponseWriter, r *http.Request) {
+		if !mutex.TryLock() {
+			// Misusing WebDAV to indicate that robot is already
+			// being controlled. We will not reply with a XML WebDAV
+			// body.
+			rw.WriteHeader(http.StatusLocked)
+			return
+		}
+		defer mutex.Unlock()
+
 		boundaries, position, actions, success := scanCommands(r.Body)
 
 		if !success {
@@ -80,28 +92,28 @@ func parseCommands(boundaries, position, actions string) (commands, error) {
 }
 
 func scanCommands(r io.Reader) (boundaries, position, actions string, success bool) {
-		scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(r)
 
-		success = scanner.Scan()
-		if !success {
-			return
-		}
+	success = scanner.Scan()
+	if !success {
+		return
+	}
 
-		boundaries = scanner.Text()
+	boundaries = scanner.Text()
 
-		success = scanner.Scan()
-		if !success {
-			return
-		}
+	success = scanner.Scan()
+	if !success {
+		return
+	}
 
-		position = scanner.Text()
+	position = scanner.Text()
 
-		success = scanner.Scan()
-		if !success {
-			return
-		}
+	success = scanner.Scan()
+	if !success {
+		return
+	}
 
-		actions = scanner.Text()
+	actions = scanner.Text()
 
 	return
 }
