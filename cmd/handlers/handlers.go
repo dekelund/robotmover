@@ -1,13 +1,12 @@
 package handlers
 
-//TODO(dekelund): Bump to go 1.21 to enable log/slog
-
 import (
 	"bufio"
 	"fmt"
 	"io"
 	"net/http"
 	"sync"
+	"log/slog"
 
 	"github.com/dekelund/robotmover/internal/robot"
 	"github.com/dekelund/robotmover/internal/robot/controllers"
@@ -24,6 +23,8 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 			// being controlled. We will not reply with a XML WebDAV
 			// body.
 			rw.WriteHeader(http.StatusLocked)
+			slog.Error("handler locked responding with http.StatusLocked")
+
 			return
 		}
 		defer mutex.Unlock()
@@ -32,7 +33,7 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 
 		if !success {
 			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to scan body")
+			slog.Error("handler failed to scan body")
 
 			return
 		}
@@ -40,7 +41,7 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 		c, err := parseBody(boundaries, position, actions)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to parse body")
+			slog.Error("handler failed to parse body", "error", err)
 
 			return
 		}
@@ -50,7 +51,7 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 
 		if err := controller.Exec(c.actions...); err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
-			//slog.Debug("handler faild to execute actions")
+			slog.Error("handler failed to execute actions", "error", err)
 
 			return
 		}
