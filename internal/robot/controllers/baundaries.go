@@ -23,6 +23,10 @@ type Boundaries struct {
 	Y int
 }
 
+// ParseBoundaries parses a string with the width and depth according to
+// following format: "X Y".
+//
+// For example "6 8" which means the room is 6 units wide and 8 units deep.
 func ParseBoundaries(b string) (Boundaries, error) {
 	var x, y int
 

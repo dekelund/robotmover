@@ -29,14 +29,23 @@ func New() *Controller {
 	}
 }
 
+// SetBoundaries tells the controller how big the room is.
 func (c *Controller) SetBoundaries(b Boundaries) {
 	c.boundaries = b
 }
 
+// CalibratePosition tells the controller what field the robot is positioned
+// with, and what direction it is facing.
 func (c *Controller) CalibratePosition(p robot.Position) {
 	c.currentPosition = p
 }
 
+// Exec controls the robot by navigating based on actions, such as:
+// - walk forward
+// - turn left
+// - turn right
+//
+// It may return an error indicating invalid position or direction.
 func (c *Controller) Exec(actions ...Action) error {
 	var errs []error
 
@@ -49,6 +58,11 @@ func (c *Controller) Exec(actions ...Action) error {
 	return errors.Join(errs...)
 }
 
+// State will return the current position of the robot, in the following format:
+// "X Y D", where X and Y correspond to which field, and D is a one of the
+// following letters "NWSE", indicating what direction the robot is facing.
+//
+// For instance 3 1 E, if the robot is located in field (3, 1), facing east.
 func (c *Controller) State() string {
 	return c.currentPosition.String()
 }

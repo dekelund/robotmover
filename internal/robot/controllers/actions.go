@@ -10,6 +10,15 @@ type Action interface {
 	exec(c *Controller) error
 }
 
+// ParseActions parses each run inside of actions, and returns
+// a slice with corresponding Actions.
+//
+// It accepts following runes as commands:
+// - "F" walk forward
+// - "R" turn right
+// - "L" turn left
+//
+// It will return errors for all unknown actions.
 func ParseActions(actions string) ([]Action, error) {
 	var errs []error
 
@@ -40,7 +49,7 @@ func parseAction(r rune) (Action, error) {
 		return TurnLeft, nil
 
 	default:
-		return TurnLeft, errors.New("unexpected action character")
+		return TurnLeft, errors.New("unexpected action-rune")
 	}
 }
 

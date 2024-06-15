@@ -25,6 +25,14 @@ func (p Position) String() string {
 	return fmt.Sprintf("%s %s", p.Coord, p.Direction)
 }
 
+// ParsePosition parses a string with following format:
+// "X Y D", where X and Y correspond to which field, and D is a one of the
+// following letters "NWSE", indicating what direction the robot is facing.
+//
+// For instance 3 1 E, if the robot is located in field (3, 1), facing east.
+//
+// It returns a Position based on parsed values, or an error for malformed
+// strings.
 func ParsePosition(p string) (Position, error) {
 	var x, y int
 	var dir string
