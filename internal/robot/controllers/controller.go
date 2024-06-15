@@ -1,10 +1,6 @@
 package controllers
 
-import (
-	"errors"
-
-	"github.com/dekelund/robotmover/internal/robot"
-)
+import "github.com/dekelund/robotmover/internal/robot"
 
 type controllerError string
 
@@ -47,15 +43,13 @@ func (c *Controller) CalibratePosition(p robot.Position) {
 //
 // It may return an error indicating invalid position or direction.
 func (c *Controller) Exec(actions ...Action) error {
-	var errs []error
-
 	for _, a := range actions {
 		if err := a.exec(c); err != nil {
-			errs = append(errs, err)
+			return err
 		}
 	}
 
-	return errors.Join(errs...)
+	return nil
 }
 
 // State will return the current position of the robot, in the following format:
