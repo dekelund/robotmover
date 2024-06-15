@@ -28,19 +28,19 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 		}
 		defer mutex.Unlock()
 
-		boundaries, position, actions, success := scanCommands(r.Body)
+		boundaries, position, actions, success := scanBody(r.Body)
 
 		if !success {
 			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to scan commands")
+			//slog.Debug("handler faild to scan body")
 
 			return
 		}
 
-		c, err := parseCommands(boundaries, position, actions)
+		c, err := parseBody(boundaries, position, actions)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to parse commands")
+			//slog.Debug("handler faild to parse body")
 
 			return
 		}
@@ -62,36 +62,36 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 	return mux
 }
 
-type commands struct {
+type controlBody struct {
 	boundaries controllers.Boundaries
 	position   robot.Position
 	actions    []controllers.Action
 }
 
-func parseCommands(boundaries, position, actions string) (commands, error) {
+func parseBody(boundaries, position, actions string) (controlBody, error) {
 	b, err := controllers.ParseBoundaries(boundaries)
 	if err != nil {
-		return commands{}, err
+		return controlBody{}, err
 	}
 
 	p, err := robot.ParsePosition(position)
 	if err != nil {
-		return commands{}, err
+		return controlBody{}, err
 	}
 
 	a, err := controllers.ParseActions(actions)
 	if err != nil {
-		return commands{}, err
+		return controlBody{}, err
 	}
 
-	return commands{
+	return controlBody{
 		boundaries: b,
 		position:   p,
 		actions:    a,
 	}, nil
 }
 
-func scanCommands(r io.Reader) (boundaries, position, actions string, success bool) {
+func scanBody(r io.Reader) (boundaries, position, actions string, success bool) {
 	scanner := bufio.NewScanner(r)
 
 	success = scanner.Scan()
