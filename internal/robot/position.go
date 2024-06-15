@@ -38,7 +38,7 @@ func ParsePosition(p string) (Position, error) {
 		return Position{}, fmt.Errorf("string not fully parsed, read %d of 2", n)
 	}
 
-	parsedDir, err := ParseDirection(dir)
+	parsedDir, err := parseDirection(dir)
 	if err != nil {
 		return Position{}, err
 	}

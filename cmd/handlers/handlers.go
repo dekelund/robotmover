@@ -56,7 +56,7 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 		}
 
 		rw.WriteHeader(http.StatusOK)
-		fmt.Fprintf(rw, "Report: %s", controller.String())
+		fmt.Fprintf(rw, "Report: %s", controller.State())
 	})
 
 	return mux

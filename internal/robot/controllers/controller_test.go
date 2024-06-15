@@ -53,7 +53,7 @@ func TestControllers_Exec_WalkForward(t *testing.T) {
 				t.Fatal("unexpected error", err)
 			}
 
-			if str := c.String(); str != tc.End {
+			if str := c.State(); str != tc.End {
 				t.Fatal("unexpected position", str)
 			}
 		})
@@ -79,7 +79,7 @@ func TestControllers_Exec_TurnLeft(t *testing.T) {
 
 		expectedPosition := "5 5 " + dir
 
-		if str := c.String(); str != expectedPosition {
+		if str := c.State(); str != expectedPosition {
 			t.Fatal("unexpected position/direction", str, "expected", expectedPosition)
 		}
 	}
@@ -104,7 +104,7 @@ func TestControllers_Exec_TurnRight(t *testing.T) {
 
 		expectedPosition := "5 5 " + dir
 
-		if str := c.String(); str != expectedPosition {
+		if str := c.State(); str != expectedPosition {
 			t.Fatal("unexpected position/direction", str, "expected", expectedPosition)
 		}
 	}
@@ -225,7 +225,7 @@ func TestControllers_Exec_example1(t *testing.T) {
 		t.Fatal("unexpected error", err)
 	}
 
-	if str := c.String(); str != "1 3 N" {
+	if str := c.State(); str != "1 3 N" {
 		t.Fatal("unexpected position", str)
 	}
 }
@@ -258,7 +258,7 @@ func TestControllers_Exec_example2(t *testing.T) {
 		t.Fatal("unexpected error", err)
 	}
 
-	if str := c.String(); str != "3 1 E" {
+	if str := c.State(); str != "3 1 E" {
 		t.Fatal("unexpected position", str)
 	}
 }

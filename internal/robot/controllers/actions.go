@@ -69,7 +69,7 @@ func (f walkForward) exec(c *Controller) error {
 		newPosition.X++
 	}
 
-	if err := c.boundaries.ValidatePosition(newPosition); err != nil {
+	if err := c.boundaries.validatePosition(newPosition); err != nil {
 		return err
 	}
 
@@ -88,7 +88,7 @@ func (f turnRight) exec(c *Controller) error {
 		newPosition.Direction = robot.North
 	}
 
-	if err := c.boundaries.ValidatePosition(newPosition); err != nil {
+	if err := c.boundaries.validatePosition(newPosition); err != nil {
 		return err
 	}
 
@@ -107,7 +107,7 @@ func (f turnLeft) exec(c *Controller) error {
 		newPosition.Direction = robot.West
 	}
 
-	if err := c.boundaries.ValidatePosition(newPosition); err != nil {
+	if err := c.boundaries.validatePosition(newPosition); err != nil {
 		return err
 	}
 

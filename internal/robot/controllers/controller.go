@@ -49,6 +49,6 @@ func (c *Controller) Exec(actions ...Action) error {
 	return errors.Join(errs...)
 }
 
-func (c *Controller) String() string {
+func (c *Controller) State() string {
 	return c.currentPosition.String()
 }

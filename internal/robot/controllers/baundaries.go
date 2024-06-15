@@ -38,7 +38,7 @@ func ParseBoundaries(b string) (Boundaries, error) {
 	return Boundaries{X: x, Y: y}, nil
 }
 
-func (b Boundaries) ValidatePosition(pos robot.Position) error {
+func (b Boundaries) validatePosition(pos robot.Position) error {
 	if pos.X < 0 {
 		return InvalidPositionError(fmt.Sprintf("x-position %d is outside of the mesh", pos.X))
 	}

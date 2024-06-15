@@ -1,34 +1,32 @@
-package robot_test
+package robot
 
 import (
 	"testing"
-
-	"github.com/dekelund/robotmover/internal/robot"
 )
 
-func TestParseDirection(t *testing.T) {
+func Test_parseDirection(t *testing.T) {
 	cases := map[string]struct {
 		input    string
-		expected robot.Direction
+		expected Direction
 	}{
 		"north": {
 			input:    "N",
-			expected: robot.North,
+			expected: North,
 		}, "east": {
 			input:    "E",
-			expected: robot.East,
+			expected: East,
 		}, "south": {
 			input:    "S",
-			expected: robot.South,
+			expected: South,
 		}, "west": {
 			input:    "W",
-			expected: robot.West,
+			expected: West,
 		},
 	}
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			dir, err := robot.ParseDirection(tc.input)
+			dir, err := parseDirection(tc.input)
 			if err != nil {
 				t.Fatal("unexpected exception: ", err)
 			}
@@ -40,7 +38,7 @@ func TestParseDirection(t *testing.T) {
 	}
 }
 
-func TestParseDirection_errors(t *testing.T) {
+func Test_parseDirection_errors(t *testing.T) {
 	cases := map[string]string{
 		"lowercase - west":  "w",
 		"lowercase - east":  "e",
@@ -51,7 +49,7 @@ func TestParseDirection_errors(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			if _, err := robot.ParseDirection(tc); err != robot.ErrInvalidDirection {
+			if _, err := parseDirection(tc); err != ErrInvalidDirection {
 				t.Fatal("unexpected exception: ", err)
 			}
 		})

@@ -13,7 +13,7 @@ const (
 	West
 )
 
-func ParseDirection(s string) (Direction, error) {
+func parseDirection(s string) (Direction, error) {
 	switch s {
 	case "N":
 		return North, nil
