@@ -5,6 +5,7 @@ package handlers
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/dekelund/robotmover/internal/robot"
@@ -15,57 +16,28 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/control", func(rw http.ResponseWriter, r *http.Request) {
-		scanner := bufio.NewScanner(r.Body)
-		if !scanner.Scan() {
+		boundaries, position, actions, success := scanCommands(r.Body)
+
+		if !success {
 			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to scan boundaries")
+			//slog.Debug("handler faild to scan commands")
 
 			return
 		}
 
-		boundaries, err := controllers.ParseBoundaries(scanner.Text())
+		c, err := parseCommands(boundaries, position, actions)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to parse boundaries")
+			//slog.Debug("handler faild to parse commands")
 
 			return
 		}
 
-		if !scanner.Scan() {
-			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to scan position")
+		controller.SetBoundaries(c.boundaries)
+		controller.CalibratePosition(c.position)
 
-			return
-		}
-
-		position, err := robot.ParsePosition(scanner.Text())
-		if err != nil {
-			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to parse position")
-
-			return
-		}
-
-		if !scanner.Scan() {
-			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to scan actions")
-
-			return
-		}
-
-		actions, err := controllers.ParseActions(scanner.Text())
-		if err != nil {
-			rw.WriteHeader(http.StatusBadRequest)
-			//slog.Debug("handler faild to parse actions")
-
-			return
-		}
-
-		controller.SetBoundaries(boundaries)
-		controller.CalibratePosition(position)
-
-		if err := controller.Exec(actions...); err != nil {
-			rw.WriteHeader(http.StatusBadRequest)
+		if err := controller.Exec(c.actions...); err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
 			//slog.Debug("handler faild to execute actions")
 
 			return
@@ -76,4 +48,60 @@ func NewMux(controller *controllers.Controller) *http.ServeMux {
 	})
 
 	return mux
+}
+
+type commands struct {
+	boundaries controllers.Boundaries
+	position   robot.Position
+	actions    []controllers.Action
+}
+
+func parseCommands(boundaries, position, actions string) (commands, error) {
+	b, err := controllers.ParseBoundaries(boundaries)
+	if err != nil {
+		return commands{}, err
+	}
+
+	p, err := robot.ParsePosition(position)
+	if err != nil {
+		return commands{}, err
+	}
+
+	a, err := controllers.ParseActions(actions)
+	if err != nil {
+		return commands{}, err
+	}
+
+	return commands{
+		boundaries: b,
+		position:   p,
+		actions:    a,
+	}, nil
+}
+
+func scanCommands(r io.Reader) (boundaries, position, actions string, success bool) {
+		scanner := bufio.NewScanner(r)
+
+		success = scanner.Scan()
+		if !success {
+			return
+		}
+
+		boundaries = scanner.Text()
+
+		success = scanner.Scan()
+		if !success {
+			return
+		}
+
+		position = scanner.Text()
+
+		success = scanner.Scan()
+		if !success {
+			return
+		}
+
+		actions = scanner.Text()
+
+	return
 }
