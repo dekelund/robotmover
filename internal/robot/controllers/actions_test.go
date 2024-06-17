@@ -39,4 +39,12 @@ func Test_ParseActions(t *testing.T) {
 
 }
 
-// TODO(dekelund): Test invalid input
+func Test_ParseActions_invalid_input(t *testing.T) {
+	input := "RFRFFPRFRF" // P must trigger an error
+
+	_, err := controllers.ParseActions(input)
+
+	if err == nil {
+		t.Fatal("unexpected success")
+	}
+}
