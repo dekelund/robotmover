@@ -61,7 +61,7 @@ const (
 
 type walkForward string
 
-func (f walkForward) exec(c *Controller) error {
+func (a walkForward) exec(c *Controller) error {
 	newPosition := c.currentPosition
 
 	switch c.currentPosition.Direction {
@@ -89,7 +89,7 @@ func (f walkForward) exec(c *Controller) error {
 
 type turnRight string
 
-func (f turnRight) exec(c *Controller) error {
+func (a turnRight) exec(c *Controller) error {
 	newPosition := c.currentPosition
 
 	newPosition.Direction++
@@ -108,7 +108,7 @@ func (f turnRight) exec(c *Controller) error {
 
 type turnLeft string
 
-func (f turnLeft) exec(c *Controller) error {
+func (a turnLeft) exec(c *Controller) error {
 	newPosition := c.currentPosition
 
 	newPosition.Direction--
